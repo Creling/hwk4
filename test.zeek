@@ -15,9 +15,9 @@ event http_begin_entity(c: connection, is_orig: bool)
 	{
 		ip_time[c$id$orig_h] = network_time();
 		ip_statistic[c$id$orig_h] = table(
-										  ["all_response"] = 0,
-										  ["404_response"] = 0
-										 );
+						  ["all_response"] = 0,
+						  ["404_response"] = 0
+						 );
 		ip_404_sets[c$id$orig_h] = set();
 	}	
 }
@@ -25,34 +25,26 @@ event http_begin_entity(c: connection, is_orig: bool)
 
 event http_reply(c: connection, version: string, code: count, reason: string)
 {
-	
-
 	++ ip_statistic[c$id$orig_h]["all_response"];
 	
 	if (code == 404)
 	{
-		print c$http$host + c$http$uri;
 		++ ip_statistic[c$id$orig_h]["404_response"];
-		print ip_statistic[c$id$orig_h]["404_response"];
         	add ip_404_sets[c$id$orig_h][c$http$host + c$http$uri];
 	}
-    
-	if (network_time() - ip_time[c$id$orig_h]  >= ip_interval)
+    	
+	for (ip, time_record in ip_time)
 	{
-		analyse[c$id$orig_h];
-		ip_time[c$id$orig_h] = network_time();
-		ip_statistic[c$id$orig_h]["all_responses"] = 0;
-		ip_statistic[c$id$orig_h]["404_responses"] = 0;
-		ip_404_sets[c$id$orig_h] = set();
+		if (network_time() - time_record  >= ip_interval)
+		{
+			analyse[ip];
+			ip_time[ip] = network_time();
+			ip_statistic[ip]["all_responses"] = 0;
+			ip_statistic[ip]["404_responses"] = 0;
+			ip_404_sets[ip] = set();
+		}
 	}
 	
-	
-}
-
-
-event zeek_done()
-{
-    print ip_404_sets;
 }
 
 
