@@ -34,8 +34,7 @@ event http_reply(c: connection, version: string, code: count, reason: string)
 		print c$http$host + c$http$uri;
 		++ ip_statistic[c$id$orig_h]["404_response"];
 		print ip_statistic[c$id$orig_h]["404_response"];
-        add ip_404_sets[c$id$orig_h][c$http$host + c$http$uri];
-    	
+        	add ip_404_sets[c$id$orig_h][c$http$host + c$http$uri];
 	}
     
 	if (network_time() - ip_time[c$id$orig_h]  >= ip_interval)
